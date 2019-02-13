@@ -6,21 +6,24 @@ VERBOSE:=-v
 
 BIN_PATH = release/$(BINARY)-linux-amd64
 
-# all: coredns
-#
-# coredns: godeps
-# 	CGO_ENABLED=0 $(SYSTEM) go build $(VERBOSE) -ldflags="-s -w -X github.com/coredns/coredns/coremain.GitCommit=$(GITCOMMIT)" -o $(BINARY)
-
-.PHONY: build godeps
+.PHONY: build clean docker-build docker-push godeps
 
 all: build
 
 build: godeps
 	./build-all.sh
 
-docker: build
-	docker build --build-arg BIN_PATH=$(BIN_PATH) -t wearefair/kubernetai .
+clean:
+	rm -rf release/
 
+docker-build: build
+	docker build --build-arg BIN_PATH=$(BIN_PATH) -t 889883130442.dkr.ecr.us-west-2.amazonaws.com/kubernetai:sha-$(GITCOMMIT)
+
+docker-push:
+	docker push 889883130442.dkr.ecr.us-west-2.amazonaws.com/kubernetai
+
+# These deps are pulled from the CoreDNS repo:
+# https://github.com/coredns/coredns/blob/008f9eb8b9a616e13dbf637fae822472ea8ec6b4/Makefile#L22-L36
 godeps:
 	@ # Not vendoring these, so external plugins compile, avoiding:
 	@ # cannot use c (type *"github.com/mholt/caddy".Controller) as type
