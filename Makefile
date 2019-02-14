@@ -8,7 +8,7 @@ BIN_PATH = release/$(BINARY)-linux-amd64
 
 .PHONY: build clean docker-build docker-push godeps
 
-all: build
+all: docker-build
 
 build: godeps
 	./build-all.sh
@@ -17,7 +17,7 @@ clean:
 	rm -rf release/
 
 docker-build: build
-	docker build --build-arg BIN_PATH=$(BIN_PATH) -t 889883130442.dkr.ecr.us-west-2.amazonaws.com/kubernetai:sha-$(GITCOMMIT)
+	docker build --build-arg BIN_PATH=$(BIN_PATH) -t 889883130442.dkr.ecr.us-west-2.amazonaws.com/kubernetai:sha-$(GITCOMMIT) .
 
 docker-push:
 	docker push 889883130442.dkr.ecr.us-west-2.amazonaws.com/kubernetai
